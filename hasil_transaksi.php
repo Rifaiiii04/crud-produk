@@ -21,6 +21,7 @@ $hasil = mysqli_query($koneksi, $query);
             <th>Total Bayar</th>
             <th>Bayar</th>
             <th>Kembalian</th>
+            <th>Aksi</th>
         </tr>
         <?php while ($baris = mysqli_fetch_assoc($hasil)): ?>
         <tr>
@@ -30,10 +31,14 @@ $hasil = mysqli_query($koneksi, $query);
             <td><?= number_format($baris['total_bayar'], 0, ',', '.'); ?></td>
             <td><?= number_format($baris['bayar'], 0, ',', '.'); ?></td>
             <td><?= number_format($baris['bayar'] - $baris['total_bayar'], 0, ',', '.'); ?></td>
+            <td>
+                <a href="edit_penjualan.php?no_penjualan=<?= $baris['no_penjualan']; ?>">Edit</a> | 
+                <a href="hapus_penjualan.php?no_penjualan=<?= $baris['no_penjualan']; ?>" onclick="return confirm('Apakah Anda yakin ingin menghapus data ini?')">Delete</a>
+            </td>
         </tr>
         <?php endwhile; ?>
     </table>
     <br>
-    <a href="transaksi_penjualan.php" style="text-decoration: none;">Kembali ke Transaksi Penjualan</a>
+    <a href="penjualan.php" style="text-decoration: none;">Kembali ke Transaksi Penjualan</a>
 </body>
 </html>
