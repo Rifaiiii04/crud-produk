@@ -8,6 +8,7 @@
 </head>
 <body>
 	<h1>Transaksi Penjualan</h1>
+	<button><a href="hasil_transaksi.php" style="text-decoration: none;">Lihat Hasil Transaksi</a></button>
   	<table border="1" width="100%" cellpadding="1" cellspacing="0">
   		<tr>
   			<td width="70%">
