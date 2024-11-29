@@ -1,15 +1,11 @@
-<?php 
-    $host = 'localhost';
-    $username = 'root';
-    $password = '';
-    $dbname = 'produk_db';
-    
-    // Create connection
-    $koneksi = mysqli_connect($host, $username, $password, $dbname);
-    
-    // Check connection
-    // if(!$koneksi){
-    //     die('Koneksi Gagal'. mysqli_connect_error());
-    // } else{
-    //     echo 'Koneksi Berhasil';
-    // }
+<?php
+$host = "localhost";
+$user = "root";
+$password = "";
+$database =  "produk_db";
+
+$koneksi = mysqli_connect($host,$user,$password,$database);
+if(!$koneksi){
+    die("Koneksi gagal: " . mysqli_connect_error());
+}
+?>

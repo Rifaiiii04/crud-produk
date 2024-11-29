@@ -1,151 +1,76 @@
-<?php 
+<?php
 include 'koneksi.php';
+$pencarian = isset($_GET['pencarian']) ? $_GET['pencarian'] : '';
 
-$cari = "";
-if (isset($_GET['cari'])) {
-    $cari = $_GET['cari'];
-    $query = "SELECT * FROM produk WHERE nama LIKE '%$cari%'";
-} else {
-    $query = "SELECT * FROM produk";
-}
+// Set data per halaman
+$dataPerHalaman = 2;
 
+// Cek halaman saat ini
+$halaman = isset($_GET['halaman']) ? (int)$_GET['halaman'] : 1;
+$awalData = ($halaman - 1) * $dataPerHalaman;
+
+// Query untuk mendapatkan data dengan limit dan pencarian
+$query = "SELECT * FROM produk WHERE nama LIKE '%$pencarian%' LIMIT $awalData, $dataPerHalaman";
 $hasil = mysqli_query($koneksi, $query);
-?>
 
+// Query untuk mendapatkan total data tanpa limit
+$queryTotal = "SELECT COUNT(*) AS total FROM produk WHERE nama LIKE '%$pencarian%'";
+$hasilTotal = mysqli_query($koneksi, $queryTotal);
+$totalData = mysqli_fetch_assoc($hasilTotal)['total'];
+
+// Hitung total halaman
+$totalHalaman = ceil($totalData / $dataPerHalaman);
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Data Produk</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background: linear-gradient(135deg, #cfd9df 0%, #e2ebf0 100%);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            margin: 0;
-        }
-
-        h2 {
-            text-align: center;
-            color: #333;
-        }
-
-        
-        .container {
-            max-width: 800px;
-            width: 90%;
-            background: rgba(255, 255, 255, 0.1);
-            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
-            backdrop-filter: blur(8px);
-            border-radius: 10px;
-            padding: 20px;
-            color: #333;
-        }
-
-        
-        .container a, .container button {
-            display: inline-block;
-            padding: 10px 20px;
-            margin-top: 10px;
-            text-decoration: none;
-            color: #fff;
-            background-color: #6c63ff;
-            border-radius: 5px;
-            transition: background 0.3s;
-        }
-        
-        .container a:hover, .container button:hover {
-            background-color: #5753d5;
-        }
-
-        form {
-            text-align: center;
-        }
-
-        form input[type="text"] {
-            padding: 8px;
-            border-radius: 5px;
-            border: 1px solid #ccc;
-            width: 70%;
-        }
-
-        /* Table styling */
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            background: rgba(255, 255, 255, 0.15);
-            backdrop-filter: blur(4px);
-            border-radius: 8px;
-            overflow: hidden;
-        }
-
-        th, td {
-            padding: 12px;
-            text-align: center;
-            color: #333;
-        }
-
-        th {
-            background: rgba(0, 0, 0, 0.3);
-            color: #fff;
-        }
-
-        tr:nth-child(even) {
-            background-color: rgba(255, 255, 255, 0.1);
-        }
-
-        tr:hover {
-            background-color: rgba(255, 255, 255, 0.2);
-        }
-        .wow{
-            margin-bottom: 10px;
-            height: 50px;
-        }
-
-        .wow a{
-            position: relative;
-            bottom: 13px;
-        }
-    </style>
+    <title>DATA PRODUK</title>
+    <link href="style.css" rel="stylesheet">
 </head>
 <body>
-    <div class="container">
-        <h2>Data Produk</h2>
-        <a href="tambah.php">Tambah Data</a>
-        <form action="index.php" method="get">
-            <label for="cari">Cari Produk:</label>
-            <input type="text" name="cari" id="cari" value="<?= htmlspecialchars($cari) ?>">
-            <button type="submit">Cari</button>
-        </form>
-        <button class="wow"><a href="index.php">Refresh</a></button>
-        <button class="wow"><a href="penjualan.php">Transaksi Penjualan</a></button>
-        <table border="1" cellpadding="10" cellspacing="0">
-            <thead>
-                <tr>
-                    <th>Nama Produk</th>
-                    <th>Harga</th>
-                    <th>Deskripsi</th>
-                    <th>Aksi</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php while($baris = mysqli_fetch_array($hasil)) { ?>
-                <tr>
-                    <td><?= $baris['nama']; ?></td>
-                    <td><?= $baris['harga']; ?></td>
-                    <td><?= $baris['deskripsi']; ?></td>
-                    <td>
-                        <a href="edit.php?id=<?= $baris['id'] ?>">Edit</a>
-                        <a href="hapus.php?id=<?= $baris['id'] ?>" onclick="return confirm('Yakin Ingin Menghapus?')">Hapus</a>
-                    </td>
-                </tr>
-                <?php } ?>
-            </tbody>
-        </table>  
+    <h2>Data Produk</h2>
+    <button><a href="tambah.php">+Tambah Data</a></button> &nbsp;
+    <button><a href="penjualan.php">Transaksi Penjualan</a></button>
+    <form method="GET" action="index.php">
+        <input type="text" name="pencarian" placeholder="Cari Data..." value="<?= $pencarian; ?>">
+        <button type="submit">Cari</button>
+        <button><a href="index.php">Refresh</a></button>
+    </form>
+    <table width="100%" cellpadding="5" cellspacing="0" border="1">
+        <tr bgcolor="yellow">
+            <td>Nama Produk</td>
+            <td>Harga</td>
+            <td>Deskripsi</td>
+            <td>Aksi</td>
+        </tr>
+        <?php while($baris = mysqli_fetch_assoc($hasil)): ?>
+        <tr>
+            <td><?= $baris['nama']; ?></td>
+            <td><?= $baris['harga']; ?></td>
+            <td><?= $baris['deskripsi']; ?></td>
+            <td>
+                <a href="edit.php?id=<?= $baris['id']; ?>">Edit</a>
+                <a href="hapus.php?id=<?= $baris['id']; ?>" onclick="return confirm('Yakin ingin menghapus data ini')">Hapus</a>
+            </td>
+        </tr>
+        <?php endwhile; ?>
+    </table>
+
+    <!-- Navigasi Paginasi -->
+    <div style="margin-top: 10px;">
+        <?php if ($halaman > 1): ?>
+            <a href="index.php?halaman=<?= $halaman - 1; ?>&pencarian=<?= $pencarian; ?>">Sebelumnya</a>
+        <?php endif; ?>
+
+        <?php for ($i = 1; $i <= $totalHalaman; $i++): ?>
+            <a href="index.php?halaman=<?= $i; ?>&pencarian=<?= $pencarian; ?>" <?= $i == $halaman ? 'style="font-weight: bold;"' : ''; ?>><?= $i; ?></a>
+        <?php endfor; ?>
+
+        <?php if ($halaman < $totalHalaman): ?>
+            <a href="index.php?halaman=<?= $halaman + 1; ?>&pencarian=<?= $pencarian; ?>">Selanjutnya</a>
+        <?php endif; ?>
     </div>
 </body>
 </html>
